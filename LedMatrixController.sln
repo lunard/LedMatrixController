@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30523.141
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LedMatrixController", "LedMatrixController\LedMatrixController.csproj", "{74B9CFEC-DB8A-4F15-B3A8-6E83118F601B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{74B9CFEC-DB8A-4F15-B3A8-6E83118F601B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74B9CFEC-DB8A-4F15-B3A8-6E83118F601B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74B9CFEC-DB8A-4F15-B3A8-6E83118F601B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74B9CFEC-DB8A-4F15-B3A8-6E83118F601B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9C164E0D-AEB9-47A8-A03B-787DC6FC70B8}
+	EndGlobalSection
+EndGlobal
