@@ -1,3 +1,5 @@
+using Autofac;
+using LedMatrixController.Infrastructure.Autofac;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -9,6 +11,8 @@ namespace LedMatrixController
 {
     public class Startup
     {
+        public ILifetimeScope AutofacContainer { get; private set; }
+
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Log.Logger = new LoggerConfiguration()
@@ -31,6 +35,11 @@ namespace LedMatrixController
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+        }
+
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+           builder.RegisterModule(new AutofacModule());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

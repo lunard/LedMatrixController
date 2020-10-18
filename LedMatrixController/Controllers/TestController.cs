@@ -1,9 +1,12 @@
-﻿using Iot.Device.Graphics;
+﻿using Iot.Device.BrickPi3.Sensors;
+using Iot.Device.Graphics;
 using Iot.Device.Ws28xx;
+using LedMatrixController.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Device.Spi;
+using System.IO;
 
 namespace LedMatrixController.Controllers
 {
@@ -12,36 +15,27 @@ namespace LedMatrixController.Controllers
     public class TestController : ControllerBase
     {
         private readonly ILogger<TestController> _logger;
-        private BitmapImage matrixImage;
-        private Ws2812b matrixDevice;
+        private readonly IImageService _imageService;
+        private readonly ILedMatrixService _ledMatrixService;
 
-        public TestController(ILogger<TestController> logger)
+        public TestController(
+            ILogger<TestController> logger,
+            IImageService imageService,
+            ILedMatrixService ledMatrixService)
         {
             _logger = logger ?? throw new NotImplementedException(logger.GetType().Name);
-
-            var settings = new SpiConnectionSettings(0, 0)
-            {
-                ClockFrequency = 2_400_000,
-                Mode = SpiMode.Mode0,
-                DataBitLength = 8
-            };
-
-            var spi = SpiDevice.Create(settings);
-            matrixDevice = new Ws2812b(spi, 32, 8);
-            matrixImage = matrixDevice.Image;
-            matrixImage.Clear();
-            _logger.LogInformation("Image:  {width}x{height}", matrixImage.Width, matrixImage.Height);
+            _imageService = imageService ?? throw new NotImplementedException(imageService.GetType().Name);
+            _ledMatrixService = ledMatrixService ?? throw new NotImplementedException(ledMatrixService.GetType().Name);
         }
 
-        [Route("led/{x}/{y}/{htmlColor}")]
-        public IActionResult SetLED(int x, int y, string htmlColor)
+        [Route("led/{x}/{y}/{hexColor}")]
+        public IActionResult SetLED(int x, int y, string hexColor)
         {
             try
             {
-                matrixImage.SetPixel(y % 2 == 0 ? x : 31 - x, y, System.Drawing.ColorTranslator.FromHtml(htmlColor));
-                matrixDevice.Update();
+                _ledMatrixService.SetPixel(x, y, System.Drawing.ColorTranslator.FromHtml("#" + hexColor));
 
-                _logger.LogInformation($"Set pixel {x}x{y} to color {htmlColor}");
+                _logger.LogInformation($"Set pixel {x}x{y} to color {hexColor}");
 
                 return Ok();
             }
@@ -52,19 +46,14 @@ namespace LedMatrixController.Controllers
             }
         }
 
-        [Route("row/{index}/{htmlColor}")]
-        public IActionResult SetLEDRow(int index, string htmlColor)
+        [Route("row/{y}/{hexColor}")]
+        public IActionResult SetLEDRow(int y, string hexColor)
         {
             try
             {
-                for (int i = 0; i < matrixImage.Width; i++)
-                {
-                    matrixImage.SetPixel(i, index, System.Drawing.ColorTranslator.FromHtml(htmlColor));
-                }
+                _ledMatrixService.SetRow(y, System.Drawing.ColorTranslator.FromHtml("#"+hexColor));
 
-                matrixDevice.Update();
-
-                _logger.LogInformation($"Set row {index} to color {htmlColor}");
+                _logger.LogInformation($"Set row {y} to color {hexColor}");
 
                 return Ok();
             }
@@ -75,12 +64,48 @@ namespace LedMatrixController.Controllers
             }
         }
 
+        [Route("matrix/{xOffset}/{yOffset}")]
+        public IActionResult SetLEDMatrix(int xOffset, int yOffset)
+        {
+            try
+            {
+                System.Drawing.Color[,] matrix = new System.Drawing.Color[,] { { System.Drawing.ColorTranslator.FromHtml("blue"), System.Drawing.ColorTranslator.FromHtml("red") }, { System.Drawing.ColorTranslator.FromHtml("red"), System.Drawing.ColorTranslator.FromHtml("blue") } };
+                _ledMatrixService.SetDataMatrix(matrix, xOffset, yOffset);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "SetLEDMatrix");
+                return BadRequest();
+            }
+        }
+
+        [Route("image/{xOffset}/{yOffset}/{testImageId}")]
+        public IActionResult SetLEDImage(int xOffset, int yOffset, int testImageId)
+        {
+            try
+            {
+                var bmpImagePath = Path.Combine(Directory.GetCurrentDirectory(), $"Images/stt_core_{testImageId}.bmp");
+                var matrix = _imageService.ConvertImageToHtmlColorMatrix(bmpImagePath);
+                _logger.LogInformation($"Image '{bmpImagePath}' converted in Color matrix with rank {matrix.Rank}");
+                _ledMatrixService.SetDataMatrix(matrix, xOffset, yOffset);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "SetLEDMatrix");
+                return BadRequest();
+            }
+        }
+
         [Route("led/reset/all")]
         public IActionResult ResetAll()
         {
             try
             {
-                matrixDevice.Update();
+                _ledMatrixService.Clear();
 
                 return Ok();
             }
