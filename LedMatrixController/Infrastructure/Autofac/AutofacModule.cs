@@ -16,6 +16,7 @@ namespace LedMatrixController.Infrastructure.Autofac
         {
             builder.RegisterType<ImageService>().As<IImageService>().InstancePerLifetimeScope();
             builder.RegisterType<Ws2812b_LedMatrixService>().As<ILedMatrixService>().SingleInstance();
+            builder.RegisterType<LedMatrixLayoutService>().As<ILedMatrixLayoutService>().InstancePerLifetimeScope();
         }
     }
 }

@@ -24,18 +24,25 @@ namespace LedMatrixController.Services.Impl
 
             _logger = logger ?? throw new NotImplementedException(logger.GetType().Name);
 
-            var settings = new SpiConnectionSettings(0, 0)
+            try
             {
-                ClockFrequency = 2_400_000,
-                Mode = SpiMode.Mode0,
-                DataBitLength = 8
-            };
+                var settings = new SpiConnectionSettings(0, 0)
+                {
+                    ClockFrequency = 2_400_000,
+                    Mode = SpiMode.Mode0,
+                    DataBitLength = 8
+                };
 
-            var spi = SpiDevice.Create(settings);
-            _matrixDevice = new Ws2812b(spi, 32, 8);
-            _matrixImage = _matrixDevice.Image;
+                var spi = SpiDevice.Create(settings);
+                _matrixDevice = new Ws2812b(spi, 32, 8);
+                _matrixImage = _matrixDevice.Image;
 
-            _logger.LogInformation("Image:  {width}x{height}", _matrixImage.Width, _matrixImage.Height);
+                _logger.LogInformation("Image:  {width}x{height}", _matrixImage.Width, _matrixImage.Height);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ws2812b_LedMatrixService: cannot create the SpiDevice");
+            }
         }
 
         public void Clear(Color color = default)
