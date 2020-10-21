@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 
 namespace LedMatrixController.Services.Interfaces
 {
@@ -33,6 +29,6 @@ namespace LedMatrixController.Services.Interfaces
 
         public void SetRow(int y, Color color);
 
-        public void SetDataMatrix(Color [,] matrix, int xOffset, int yOffset);
+        public void SetDataMatrix(Color[,] matrix, int xOffset, int yOffset);
     }
 }

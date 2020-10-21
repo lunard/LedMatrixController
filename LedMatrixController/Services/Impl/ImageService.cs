@@ -2,9 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Runtime.InteropServices;
 
 namespace LedMatrixController.Services.Impl
 {

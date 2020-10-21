@@ -1,16 +1,20 @@
 ﻿using LedMatrixController.Services.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace LedMatrixController.Services.Impl
 {
     public class LedMatrixLayoutService : ILedMatrixLayoutService
     {
-        public void SetSpeechDialogAnimation(SpeechDialogAction action, TimeSpan frameDuration)
+        Dictionary<SectionPosition, ISection> sections = new Dictionary<SectionPosition, ISection>();
+        public ISection[] GetLayoutSections()
         {
-            throw new NotImplementedException();
+            return sections.Values.ToArray();
+        }
+
+        public void SetLayoutSection(ISection section)
+        {
+            sections[section.Position] = section;
         }
     }
 }

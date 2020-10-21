@@ -1,5 +1,4 @@
 using Autofac;
-using LedMatrixController.BackgroundServices;
 using LedMatrixController.Infrastructure.Autofac;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -35,13 +34,12 @@ namespace LedMatrixController
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHostedService<LedMatrixHostedService>();
             services.AddControllers();
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
         {
-           builder.RegisterModule(new AutofacModule());
+            builder.RegisterModule(new AutofacModule());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

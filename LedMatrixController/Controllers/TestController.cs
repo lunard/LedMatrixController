@@ -1,11 +1,8 @@
-﻿using Iot.Device.BrickPi3.Sensors;
-using Iot.Device.Graphics;
-using Iot.Device.Ws28xx;
+﻿using LedMatrixController.Services.Impl.Sections;
 using LedMatrixController.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Device.Spi;
 using System.IO;
 
 namespace LedMatrixController.Controllers
@@ -17,15 +14,18 @@ namespace LedMatrixController.Controllers
         private readonly ILogger<TestController> _logger;
         private readonly IImageService _imageService;
         private readonly ILedMatrixService _ledMatrixService;
+        private readonly ILedMatrixLayoutService _ledMatrixLayoutService;
 
         public TestController(
             ILogger<TestController> logger,
             IImageService imageService,
-            ILedMatrixService ledMatrixService)
+            ILedMatrixService ledMatrixService,
+            ILedMatrixLayoutService ledMatrixLayoutService)
         {
             _logger = logger ?? throw new NotImplementedException(logger.GetType().Name);
             _imageService = imageService ?? throw new NotImplementedException(imageService.GetType().Name);
             _ledMatrixService = ledMatrixService ?? throw new NotImplementedException(ledMatrixService.GetType().Name);
+            _ledMatrixLayoutService = ledMatrixLayoutService ?? throw new NotImplementedException(ledMatrixLayoutService.GetType().Name);
         }
 
         [Route("led/{x}/{y}/{hexColor}")]
@@ -51,7 +51,7 @@ namespace LedMatrixController.Controllers
         {
             try
             {
-                _ledMatrixService.SetRow(y, System.Drawing.ColorTranslator.FromHtml("#"+hexColor));
+                _ledMatrixService.SetRow(y, System.Drawing.ColorTranslator.FromHtml("#" + hexColor));
 
                 _logger.LogInformation($"Set row {y} to color {hexColor}");
 
@@ -90,6 +90,25 @@ namespace LedMatrixController.Controllers
                 var matrix = _imageService.ConvertImageToHtmlColorMatrix(bmpImagePath);
                 _logger.LogInformation($"Image '{bmpImagePath}' converted in Color matrix with rank {matrix.Rank}");
                 _ledMatrixService.SetDataMatrix(matrix, xOffset, yOffset);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "SetLEDMatrix");
+                return BadRequest();
+            }
+        }
+
+
+        [Route("image2/{xOffset}/{yOffset}/{testImageId}")]
+        public IActionResult SetLEDImage2(int xOffset, int yOffset, int testImageId)
+        {
+            try
+            {
+                var bmpImagePath = Path.Combine(Directory.GetCurrentDirectory(), $"Images/stt_core_{testImageId}.bmp");
+                var section = new SectionImage(SectionPosition.Left, bmpImagePath, _imageService);
+                _ledMatrixLayoutService.SetLayoutSection(section);
 
                 return Ok();
             }

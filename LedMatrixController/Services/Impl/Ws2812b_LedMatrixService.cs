@@ -3,11 +3,8 @@ using Iot.Device.Ws28xx;
 using LedMatrixController.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Device.Spi;
 using System.Drawing;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace LedMatrixController.Services.Impl
 {
