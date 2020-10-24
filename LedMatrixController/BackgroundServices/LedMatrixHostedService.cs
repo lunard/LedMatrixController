@@ -34,31 +34,45 @@ namespace LedMatrixController.BackgroundServices
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            _ledMatrixService.Clear();
             while (!stoppingToken.IsCancellationRequested)
             {
                 var sections = _ledMatrixLayoutService.GetLayoutSections();
                 foreach (var section in sections)
                 {
-                    var pixelMatrix = section.GetSectionPixelMatrix();
-                    switch (section.Position)
+                    try
                     {
-                        case SectionPosition.Left:
-                            _ledMatrixService.SetDataMatrix(pixelMatrix, 0, 0);
-                            break;
-                        case SectionPosition.Center:
-                            _ledMatrixService.SetDataMatrix(pixelMatrix, 8, 0);
-                            break;
-                        case SectionPosition.Right:
-                            _ledMatrixService.SetDataMatrix(pixelMatrix, 24, 0);
-                            break;
-                        default:
-                            break;
+                        var pixelMatrix = section.GetSectionPixelMatrix();
+                        if (pixelMatrix != null)
+                        {
+                            switch (section.Position)
+                            {
+                                case SectionPosition.Left:
+                                    _ledMatrixService.SetDataMatrix(pixelMatrix, 0, 0);
+                                    break;
+                                case SectionPosition.Center:
+                                    _ledMatrixService.SetDataMatrix(pixelMatrix, 8, 0);
+                                    break;
+                                case SectionPosition.Right:
+                                    _ledMatrixService.SetDataMatrix(pixelMatrix, 24, 0);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, $"Problem in section {section.GetType().FullName}");
+                        // remove current section
+                        _ledMatrixLayoutService.RemoveSection(section);
                     }
                 }
 
                 Thread.Sleep(50);
             }
 
+            _ledMatrixService.Clear();
             return Task.CompletedTask;
         }
 

@@ -32,12 +32,12 @@ namespace LedMatrixController.Services.Impl
             int width = bmp.Width;
             int height = bmp.Height;
             Color[,] result = new Color[width, height];
-
+            _logger.LogDebug($"ImageTo2DByteArray: convert {width}x{height} bitmap");
             for (int y = 0; y < height; ++y)
             {
                 for (int x = 0; x < width; ++x)
                 {
-                    result[y, x] = bmp.GetPixel(x, y);
+                    result[x, y] = bmp.GetPixel(x, y);
                 }
             }
 

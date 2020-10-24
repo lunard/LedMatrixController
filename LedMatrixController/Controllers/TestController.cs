@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
+using System.Linq;
 
 namespace LedMatrixController.Controllers
 {
@@ -101,14 +102,33 @@ namespace LedMatrixController.Controllers
         }
 
 
-        [Route("image2/{xOffset}/{yOffset}/{testImageId}")]
-        public IActionResult SetLEDImage2(int xOffset, int yOffset, int testImageId)
+        [Route("image2/{testImageId}")]
+        public IActionResult SetLEDImage2(int testImageId)
         {
             try
             {
                 var bmpImagePath = Path.Combine(Directory.GetCurrentDirectory(), $"Images/stt_core_{testImageId}.bmp");
                 var section = new SectionImage(SectionPosition.Left, bmpImagePath, _imageService);
-                _ledMatrixLayoutService.SetLayoutSection(section);
+                _ledMatrixLayoutService.SetSection(section);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "SetLEDMatrix");
+                return BadRequest();
+            }
+        }
+
+
+        [Route("animation/{firstImageName}/{transitionDuration}")]
+        public IActionResult SetLEDAnimation(string firstImageName, int transitionDuration)
+        {
+            try
+            {
+                var imageBasePath = Path.Combine(Directory.GetCurrentDirectory(), $"Images/");
+                var section = new SectionAnimation(SectionPosition.Center, firstImageName, imageBasePath, TimeSpan.FromMilliseconds(transitionDuration), _imageService);
+                _ledMatrixLayoutService.SetSection(section);
 
                 return Ok();
             }

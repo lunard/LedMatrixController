@@ -3,7 +3,8 @@
 
     public interface ILedMatrixLayoutService
     {
-        void SetLayoutSection(ISection section);
+        void SetSection(ISection section);
+        void RemoveSection(ISection section);
         ISection[] GetLayoutSections();
     }
 }
