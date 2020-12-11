@@ -16,3 +16,7 @@ scp -r .\LedMatrixController\bin\Debug\netcoreapp3.1\linux-arm\publish\* pi@<ras
  ```
   wget --spider http://localhost:5000/api/test/led/1/2/blue
  ```
+
+ ## Problems
+ Build a single file doesn't embed native libreries (eg Serilog.Skins.SEQ.dll)
+ To do that, we have to use the flag **IncludeNativeLibrariesForSelfExtract**, but it seems not to work !
